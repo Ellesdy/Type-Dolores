@@ -1,0 +1,75 @@
+{
+    "Name": "Command",
+    "commands": {
+      "verify": {
+        "name": "verify",
+        "description": "Verify a user by removing the 'Unverified' role and adding the 'Verified' role.",
+        "options": [
+          {
+            "name": "user",
+            "description": "The user you want to verify.",
+            "type": 6,
+            "required": true
+          }
+        ]
+      },
+      "channel": {
+        "name": "channel",
+        "description": "Manage voice channels",
+        "options": [
+          {
+            "name": "create",
+            "description": "Create a voice channel",
+            "type": 1,
+            "options": [
+              {
+                "name": "name",
+                "description": "The name of the voice channel",
+                "type": 3,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "limit",
+            "description": "Set the user limit for your voice channel",
+            "type": 1,
+            "options": [
+              {
+                "name": "limit",
+                "description": "The user limit for the voice channel (0-99)",
+                "type": 4,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "allow",
+            "description": "Allow a user to connect to your voice channel",
+            "type": 1,
+            "options": [
+              {
+                "name": "user",
+                "description": "The user you want to allow",
+                "type": 6,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "kick",
+            "description": "Kick a user from your voice channel",
+            "type": 1,
+            "options": [
+              {
+                "name": "user",
+                "description": "The user you want to kick",
+                "type": 6,
+                "required": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
