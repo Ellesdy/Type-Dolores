@@ -1,5 +1,12 @@
-import { Client, GuildChannel, Snowflake } from "discord.js";
+import {
+  CommandInteraction,
+  Guild,
+  VoiceChannel,
+  GuildChannel,
+  GuildChannelCreateOptions,
+} from "discord.js";
 
+import { Client } from "discord.js";
 import LoggerService from "../system/loggerService";
 import MessageService from "../system/messageService";
 import ConfigService from "../system/configService";
@@ -51,7 +58,7 @@ class ChannelService {
   }
 
   GetSystemChannels(): [string, string][] {
-    const channelConfig = Object(this.Config.Channel);
+    const channelConfig = Object(this.Config.ChGannel);
     return Object.keys(channelConfig)
       .filter((option) => option !== "Name")
       .map((channel) => [channel, channelConfig[channel]]);

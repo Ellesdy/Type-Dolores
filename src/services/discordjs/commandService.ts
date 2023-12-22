@@ -1,70 +1,62 @@
-import { Client, Collection, CommandInteraction } from "discord.js";
-import * as fs from "fs";
-import path from "path";
+import { REST, Routes } from "discord.js";
 import ConfigService from "../system/configService";
-import ChannelService from "./channelService";
-
-export class CommandService {
-  private client: Client;
+import defaultCommands from "../../commands/commands";
+import {
+  SlashCommandBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
+} from "discord.js";
+import CommandModel from "../../commands/command.model";
+class CommandService {
   private configService: ConfigService;
-  private channelService: ChannelService;
-  private commands: Collection<string, any>;
+  private commands: CommandModel[];
 
-  constructor(
-    client: Client,
-    configService: ConfigService,
-    channelService: ChannelService
-  ) {
-    this.client = client;
-    this.configService = configService;
-    this.channelService = channelService;
-
-    this.commands = new Collection();
-    this.loadCommands();
-  }
-
-  private loadCommands() {
-    const commandsPath = path.join(__dirname, "../../commands");
-    const commandFiles = fs
-      .readdirSync(commandsPath)
-      .filter((file) => file.endsWith(".ts"));
-
-    for (const file of commandFiles) {
-      const command = require(`../../commands${file}`);
-      this.commands.set(command.data.name, command);
-    }
+  constructor() {
+    this.configService = new ConfigService();
+    this.commands = [];
   }
 
   public async registerCommands(): Promise<void> {
+    this.loadCommands();
+    const rest = new REST().setToken(this.configService.Client.botToken);
+
     try {
-      const commandData = this.commands.map((cmd) => cmd.data.toJSON());
-      await this.client.application?.commands.set(commandData);
-      console.log("Commands registered successfully.");
+      console.log(
+        `Started registering ${this.commands.length} application (/) commands.`
+      );
+      const data = await rest.put(
+        Routes.applicationGuildCommands(
+          this.configService.Client.applicationID,
+          this.configService.Client.guildID
+        ),
+        { body: this.commands }
+      );
+      console.log(
+        `Successfully registered ${this.commands.length} application (/) commands.`
+      );
     } catch (error) {
-      console.error("Error registering commands:", error);
+      console.error(error);
     }
   }
 
-  public setupListeners(): void {
-    this.client.on("interactionCreate", async (interaction) => {
-      if (!interaction.isCommand()) return;
+  private loadCommands(): void {
+    for (const command of defaultCommands) {
+      this.loadCommand(command);
+    }
+  }
 
-      const command = this.commands.get(interaction.commandName);
-      if (!command) return;
+  private async loadCommand(command: {
+    data: any;
+    execute: any;
+  }): Promise<void> {
+    try {
+      this.commands.push(command.data.toJSON());
+    } catch (error) {
+      console.error(`Error loading command`, error);
+    }
+  }
 
-      try {
-        await command.execute(interaction);
-      } catch (error) {
-        console.error(
-          `Error executing command ${interaction.commandName}:`,
-          error
-        );
-        await interaction.reply({
-          content: "An error occurred while executing the command.",
-          ephemeral: true,
-        });
-      }
-    });
+  public getCommands() {
+    return defaultCommands;
   }
 }
 

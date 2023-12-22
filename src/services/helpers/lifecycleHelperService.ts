@@ -6,6 +6,7 @@ import CommandService from "../discordjs/commandService";
 import ConversationHelperService from "../helpers/conversationHelperService";
 import ChatGPTService from "../features/chatGPTService";
 import MessageService from "../system/messageService";
+import CommandModel from "../../commands/command.model";
 
 class LifecycleHelperService {
   private clientService: ClientService;
@@ -67,6 +68,29 @@ class LifecycleHelperService {
             response
           );
         }
+      }
+    });
+
+    // Event listener for interactions
+    this.clientService.Client.on("interactionCreate", async (interaction) => {
+      if (!interaction.isCommand()) return;
+
+      // Find the command
+      const command: any = this.commandService
+        .getCommands()
+        .find((cmd) => cmd.name === interaction.commandName);
+
+      if (!command) return;
+
+      try {
+        // Execute the command
+        command.execute(interaction);
+      } catch (error) {
+        console.error(error);
+        await interaction.reply({
+          content: "There was an error while executing this command.",
+          ephemeral: true,
+        });
       }
     });
   }

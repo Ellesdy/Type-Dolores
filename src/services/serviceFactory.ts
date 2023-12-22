@@ -37,11 +37,7 @@ class ServiceFactory {
       clientService.Client, // Adjusted to use a getClient() method or similar
       configService
     );
-    const commandService = new CommandService(
-      clientService.Client,
-      configService,
-      channelService
-    );
+    const commandService = new CommandService();
     const conversationService = new ConversationHelperService();
     const chatGPTService = new ChatGPTService(conversationService);
     const lifecycleHelperService = new LifecycleHelperService(
