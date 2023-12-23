@@ -1,0 +1,16 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Member {
+  id    Int     @id @default(autoincrement())
+  username String
+  guildName String
+  discordId String
+  active Boolean @default(true)
+
+  joinDate DateTime @default(now())
+  rejoinDate DateTime? @default(now())
+  leaveDate DateTime?
+}
