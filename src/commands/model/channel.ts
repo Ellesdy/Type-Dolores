@@ -1,20 +1,12 @@
+import { ApplicationCommandOptionType, ChannelType, CommandInteraction, Guild, PermissionsBitField, VoiceChannel } from 'discord.js';
 import {
-  SlashCommandBuilder,
-  StringSelectMenuBuilder,
-  ChannelSelectMenuBuilder,
-  SlashCommandChannelOption,
+  SlashCommandBuilder
 } from "@discordjs/builders";
-import {
-  CommandInteraction,
-  ApplicationCommandOptionType,
-  Guild,
-  VoiceChannel,
-  GuildChannelCreateOptions,
-  ChannelType,
-  PermissionsBitField,
-} from "discord.js";
+import SaveService from '../../services/helpers/save.service';
+
 
 const channelName = "channel";
+let channelOwners: any;
 const builder = new SlashCommandBuilder();
 
 const channelCommand = {
@@ -38,34 +30,26 @@ const channelCommand = {
 };
 
 async function createChannel(interaction: CommandInteraction): Promise<void> {
-  if (!interaction.guild) {
-    await interaction.reply("This command can only be used in a guild.");
+  channelOwners = JSON.parse(SaveService.loadChannelOwners());
+
+  if(channelOwners[interaction.user.id] != undefined){
+    interaction.reply("You already have a channel.");
     return;
   }
 
   try {
-    const guild: Guild = interaction.guild;
+    const guild: Guild = interaction.guild!;
     const channelName = `Channel-${interaction.user.username}`; // Customize as needed
-
-    const channels = await guild.channels.fetch();
-    let exitingChannel = false;
-
-    channels.forEach((channel) => {
-      if (channel!.name === channelName) {
-        exitingChannel = true;
-      }
-    });
-
-    if (exitingChannel) {
-      await interaction.reply("You already have a channel.");
-      return;
-    }
 
     const channel = (await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildVoice, // Ensure this is a voice channel
       // Additional options like permissions, bitrate, user limit, etc.
     })) as VoiceChannel;
+    channelOwners[interaction.user.id] = channel.id;
+    SaveService.saveChannelOwners(JSON.stringify(channelOwners));
+
+    console.log(channelOwners);
 
     channel.setParent("1176317517984178307"); // Set the category
 
@@ -85,6 +69,7 @@ async function createChannel(interaction: CommandInteraction): Promise<void> {
 }
 
 async function deleteChannel(interaction: CommandInteraction): Promise<void> {
+  channelOwners = JSON.parse(SaveService.loadChannelOwners());
   if (!interaction.guild) {
     await interaction.reply("This command can only be used in a guild.");
     return;
@@ -98,19 +83,27 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
   )) as VoiceChannel;
 
   //check if user has manage permissions in channel
-  const permissions = channel.permissionsFor(interaction.user);
-  if (!permissions?.has(PermissionsBitField.Flags.ManageChannels)) {
-    await interaction.reply(
-      "You do not have the required permissions to delete this channel."
-    );
-    return;
-  }
+  // const permissions = channel.permissionsFor(interaction.user);
+  // if (!permissions?.has(PermissionsBitField.Flags.ManageChannels)) {
+  //   await interaction.reply(
+  //     "You do not have the required permissions to delete this channel."
+  //   );
+  //   return;
+  // }
 
   console.log(interaction.channel!.type);
   if (!(interaction.channel!.type == ChannelType.GuildVoice)) {
     await interaction.reply(
       "This command can only be used in a voice channel."
     );
+    return;
+  }
+
+
+  console.log(channelOwners[interaction.user.id]);
+  console.log(channel.id);
+  if(channelOwners[interaction.user.id] !== channel.id){
+    await interaction.reply("You do not own this channel.");
     return;
   }
   try {
@@ -120,6 +113,9 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
 
     await channel.delete();
 
+    delete channelOwners[interaction.user.id];
+    SaveService.saveChannelOwners(JSON.stringify(channelOwners));
+
     await interaction.reply(`Voice channel "${channelName}" deleted!`);
   } catch (error) {
     console.error("Error deleting channel:", error);
@@ -128,6 +124,7 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
 }
 
 async function setUserLimit(interaction: CommandInteraction): Promise<void> {
+  channelOwners = JSON.parse(SaveService.loadChannelOwners());
   const limit = interaction.options.get("limit")?.value as number;
   if (limit! > 25 || limit! < 0) {
     await interaction.reply("Limit must be between 0 and 25.");
