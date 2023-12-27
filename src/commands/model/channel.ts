@@ -15,26 +15,11 @@ import {
 } from "discord.js";
 
 const channelName = "channel";
-const slashCommand = new SlashCommandBuilder()
-  .setName(channelName)
-  .setDescription("Manage voice channels")
-  .addSubcommand((subcommand) =>
-    subcommand.setName("create").setDescription("Create a new voice channel")
-  )
-  .addSubcommand((subcommand) =>
-    subcommand.setName("delete").setDescription("Delete a voice channel")
-  )
-  .addSubcommand((subcommand) =>
-    subcommand.addIntegerOption((option) =>
-      option
-        .setName("limit")
-        .setDescription("Set the user limit for the channel")
-    )
-  );
+const builder = new SlashCommandBuilder();
 
 const channelCommand = {
   name: channelName,
-  data: slashCommand,
+  data: builder,
   async execute(interaction: CommandInteraction) {
     const subcommand = interaction.options.data.find(
       (option) => option.type === ApplicationCommandOptionType.Subcommand
@@ -62,13 +47,27 @@ async function createChannel(interaction: CommandInteraction): Promise<void> {
     const guild: Guild = interaction.guild;
     const channelName = `Channel-${interaction.user.username}`; // Customize as needed
 
+    const channels = await guild.channels.fetch();
+    let exitingChannel = false;
+
+    channels.forEach((channel) => {
+      if (channel!.name === channelName) {
+        exitingChannel = true;
+      }
+    });
+
+    if (exitingChannel) {
+      await interaction.reply("You already have a channel.");
+      return;
+    }
+
     const channel = (await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildVoice, // Ensure this is a voice channel
       // Additional options like permissions, bitrate, user limit, etc.
     })) as VoiceChannel;
 
-    // give channel manage permissions to user
+    channel.setParent("1176317517984178307"); // Set the category
 
     await channel.permissionOverwrites.create(interaction.user, {
       ManageChannels: true,
@@ -107,7 +106,8 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
     return;
   }
 
-  if (!(interaction.channel!.type.toString() === "GUILD_VOICE")) {
+  console.log(interaction.channel!.type);
+  if (!(interaction.channel!.type == ChannelType.GuildVoice)) {
     await interaction.reply(
       "This command can only be used in a voice channel."
     );
@@ -128,11 +128,16 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
 }
 
 async function setUserLimit(interaction: CommandInteraction): Promise<void> {
+  const limit = interaction.options.get("limit")?.value as number;
+  if (limit! > 25 || limit! < 0) {
+    await interaction.reply("Limit must be between 0 and 25.");
+    return;
+  }
   if (!interaction.guild) {
     await interaction.reply("This command can only be used in a guild.");
     return;
   }
-  if (!(interaction.channel!.type.toString() === "GUILD_VOICE")) {
+  if (!(interaction.channel!.type === ChannelType.GuildVoice)) {
     await interaction.reply(
       "This command can only be used in a voice channel."
     );
@@ -157,4 +162,24 @@ async function setUserLimit(interaction: CommandInteraction): Promise<void> {
   return;
 }
 
+builder
+  .setName(channelName)
+  .setDescription("Manage voice channels")
+  .addSubcommand((subcommand) =>
+    subcommand.setName("create").setDescription("Create a new voice channel")
+  )
+  .addSubcommand((subcommand) =>
+    subcommand.setName("delete").setDescription("Delete a voice channel")
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName("limit")
+      .setDescription("Set the user limit for the channel")
+      .addIntegerOption((option) =>
+        option
+          .setName("limit")
+          .setDescription("The user limit for the channel")
+          .setRequired(true)
+      )
+  );
 export default channelCommand;

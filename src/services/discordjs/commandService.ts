@@ -49,7 +49,8 @@ class CommandService {
     execute: any;
   }): Promise<void> {
     try {
-      this.commands.push(command.data.toJSON());
+      console.log(`Loading command ${command.data.name}`);
+      this.commands.push(command.data);
     } catch (error) {
       console.error(`Error loading command`, error);
     }

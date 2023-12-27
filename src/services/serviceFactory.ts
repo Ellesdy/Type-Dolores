@@ -43,9 +43,9 @@ class ServiceFactory {
     const lifecycleHelperService = new LifecycleHelperService(
       clientService,
       commandService,
-      conversationService,
       chatGPTService,
-      messageService
+      messageService,
+      loggerService
     );
     const startupService = new StartupService(
       clientService,

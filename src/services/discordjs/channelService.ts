@@ -58,7 +58,7 @@ class ChannelService {
   }
 
   GetSystemChannels(): [string, string][] {
-    const channelConfig = Object(this.Config.ChGannel);
+    const channelConfig = Object(this.Config.Channel);
     return Object.keys(channelConfig)
       .filter((option) => option !== "Name")
       .map((channel) => [channel, channelConfig[channel]]);
