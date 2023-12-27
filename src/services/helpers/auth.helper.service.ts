@@ -1,4 +1,4 @@
-import { GuildMember, PermissionsBitField } from "discord.js";
+import { GuildMember, Message, PermissionsBitField } from "discord.js";
 
 export default class AuthHelperService {
   static hasManageRolesPermission(user: GuildMember) {

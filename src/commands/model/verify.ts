@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, GuildMember } from "discord.js";
 import ConfigService from "../../services/system/configService";
 import CommandModel from "../command.model";
-import AuthHelperService from "../../services/helpers/auth.helper";
+import AuthHelperService from "../../services/helpers/auth.helper.service";
 
 const configService = new ConfigService(); // Configure as needed
 

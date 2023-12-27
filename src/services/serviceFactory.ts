@@ -6,12 +6,12 @@ import GuildService from "./discordjs/guildService";
 import ChannelService from "./discordjs/channelService";
 import CommandService from "./discordjs/commandService";
 import ChatGPTService from "./features/chatGPTService";
-import LifecycleHelperService from "./helpers/lifecycleHelperService";
+import LifecycleHelperService from "./helpers/lifecycle.helper.service";
 import StartupService from "./system/startupService";
-import ValidationHelperService from "./helpers/validationHelperService";
+import ValidationHelperService from "./helpers/validation.helper.service";
 import VCManagerService from "./features/VCManagerService";
 import VerifyService from "./features/verifyService";
-import ConversationHelperService from "./helpers/conversationHelperService";
+import ConversationHelperService from "./helpers/conversation.helper.service";
 import MemberService from "./discordjs/memberService";
 import { Client } from "discord.js";
 

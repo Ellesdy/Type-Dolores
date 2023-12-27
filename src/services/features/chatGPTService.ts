@@ -3,7 +3,7 @@ import { CommandInteraction } from "discord.js";
 import axios from "axios";
 
 // Assuming ConversationService is a type you have defined elsewhere
-import ConversationService from "../helpers/conversationHelperService";
+import ConversationService from "../helpers/conversation.helper.service";
 import ConfigService from "../system/configService";
 
 type Message = {

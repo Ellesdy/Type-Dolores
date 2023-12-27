@@ -3,28 +3,29 @@ import { Client, CommandInteraction, Message } from "discord.js";
 // Assuming these are types you have defined elsewhere
 import ClientService from "../discordjs/clientService";
 import CommandService from "../discordjs/commandService";
-import ConversationHelperService from "../helpers/conversationHelperService";
+import ConversationHelperService from "../helpers/conversation.helper.service";
 import ChatGPTService from "../features/chatGPTService";
 import MessageService from "../system/messageService";
 import CommandModel from "../../commands/command.model";
+import AuthHelperService from "./auth.helper.service";
+import MessageFilterHelperService from "./message-filter.helper.service";
+import LoggerService from "../system/loggerService";
 
 class LifecycleHelperService {
   private clientService: ClientService;
   private commandService: CommandService;
-  private conversationHelperService: ConversationHelperService;
   private chatGPTService: ChatGPTService;
   private messageService: MessageService;
 
   constructor(
     clientService: ClientService,
     commandService: CommandService,
-    conversationHelperService: ConversationHelperService,
     chatGPTService: ChatGPTService,
-    messageService: MessageService
+    messageService: MessageService,
+    private loggerService: LoggerService
   ) {
     this.clientService = clientService;
     this.commandService = commandService;
-    this.conversationHelperService = conversationHelperService;
     this.chatGPTService = chatGPTService;
     this.messageService = messageService;
   }
@@ -33,18 +34,17 @@ class LifecycleHelperService {
     this.clientService.Client.on("ready", async () => {
       const clientUser = this.clientService.Client.user;
       if (clientUser) {
-        console.log(`Logged in as ${clientUser.tag}!`);
+        this.loggerService.logSystem(`Logged in as ${clientUser.tag}!`);
         await this.commandService.registerCommands();
       }
     });
 
     this.clientService.Client.on("messageCreate", async (message: Message) => {
-      if (
-        message.author.bot ||
-        message.content.toLowerCase().includes("@everyone") ||
-        message.content.toLowerCase().includes("@here")
-      )
+      if (MessageFilterHelperService.isBotOrEveryone(message)) {
         return;
+      }
+
+      //? Would clientService.Client.user ever be undefined here?
       if (
         this.clientService.Client.user &&
         message.mentions.has(this.clientService.Client.user)
