@@ -1,8 +1,5 @@
 import { CommandInteraction } from "discord.js";
-
 import axios from "axios";
-
-// Assuming ConversationService is a type you have defined elsewhere
 import ConversationService from "../helpers/conversation.helper.service";
 import ConfigService from "../system/configService";
 
@@ -19,13 +16,14 @@ class ChatGPTService {
   constructor(conversationService: ConversationService) {
     this.conversationService = conversationService;
     this.configService = new ConfigService();
+    // Ensure this is your actual OpenAI API key, stored securely
     this.apiKey = this.configService.System.openAIKey;
   }
 
   async getResponse(conversation: Message[], userId: string): Promise<string> {
     const headers = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${this.apiKey}`,
+      Authorization: `Bearer ${this.apiKey}`, // Your secure API key
     };
 
     const messages: Message[] = [
@@ -43,10 +41,11 @@ class ChatGPTService {
     ];
 
     const data = {
-      model: "gpt-4",
+      model: "gpt-4", // Correct model identifier for GPT-4
       messages: messages,
-      max_tokens: 2000,
-      temperature: 0.7,
+      max_tokens: 2000, // Adjust based on your needs
+      temperature: 0.7, // Adjust based on your needs
+      // Add any new parameters or configurations here
     };
 
     try {
@@ -64,6 +63,13 @@ class ChatGPTService {
       return gptResponse;
     } catch (error) {
       console.error("Error getting ChatGPT response:", error);
+      if (
+        (error as any).response &&
+        (error as any).response.data &&
+        (error as any).response.data.error
+      ) {
+        console.error("Response error:");
+      }
       return "I'm sorry, but I couldn't process your message.";
     }
   }
