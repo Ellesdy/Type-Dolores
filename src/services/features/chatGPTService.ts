@@ -5,6 +5,9 @@ import axios from "axios";
 // Assuming ConversationService is a type you have defined elsewhere
 import ConversationService from "../helpers/conversation.helper.service";
 import ConfigService from "../system/configService";
+import ClientService from "../discordjs/clientService";
+import MessageFilterHelperService from "../helpers/message-filter.helper.service";
+import MessageService from "../system/messageService";
 
 type Message = {
   role: "user" | "assistant" | "system";
@@ -16,7 +19,7 @@ class ChatGPTService {
   private configService: ConfigService;
   private apiKey: string;
 
-  constructor(conversationService: ConversationService) {
+  constructor(conversationService: ConversationService, private clientService: ClientService, private messageService: MessageService) {
     this.conversationService = conversationService;
     this.configService = new ConfigService();
     this.apiKey = this.configService.System.openAIKey;
@@ -79,6 +82,43 @@ class ChatGPTService {
     });
 
     return response;
+  }
+
+  async handleQuery(message: any) {
+      if (MessageFilterHelperService.isBotOrEveryone(message)) {
+        return;
+      }
+
+      //? Would clientService.Client.user ever be undefined here?
+      if (
+        this.clientService.Client.user &&
+        message.mentions.has(this.clientService.Client.user)
+      ) {
+        await message.channel.sendTyping();
+
+        const userId = message.author.id;
+        const content = message.content;
+
+        const response = await this.handleMessage(
+          userId,
+          content
+        );
+
+        if (Array.isArray(response) && response.length > 0) {
+          // Handle the case where response is an array
+          for (const res of response) {
+            if (res.content && res.content.trim() !== "") {
+              // Use res.content here
+            }
+          }
+        } else if (typeof response === "string") {
+          // Handle the case where response is a string
+          await this.messageService.sendDiscordMessage(
+            message.channel,
+            response
+          );
+        }
+      }
   }
 }
 

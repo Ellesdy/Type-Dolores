@@ -40,77 +40,33 @@ class LifecycleHelperService {
     });
 
     this.clientService.Client.on("messageCreate", async (message: Message) => {
-      if (MessageFilterHelperService.isBotOrEveryone(message)) {
-        return;
-      }
-
-      //? Would clientService.Client.user ever be undefined here?
-      if (
-        this.clientService.Client.user &&
-        message.mentions.has(this.clientService.Client.user)
-      ) {
-        await message.channel.sendTyping();
-
-        const userId = message.author.id;
-        const content = message.content;
-
-        const response = await this.chatGPTService.handleMessage(
-          userId,
-          content
-        );
-
-        if (Array.isArray(response) && response.length > 0) {
-          // Handle the case where response is an array
-          for (const res of response) {
-            if (res.content && res.content.trim() !== "") {
-              // Use res.content here
-            }
-          }
-        } else if (typeof response === "string") {
-          // Handle the case where response is a string
-          await this.messageService.sendDiscordMessage(
-            message.channel,
-            response
-          );
-        }
-      }
+      this.chatGPTService.handleQuery(message);
     });
 
     // Event listener for interactions
     this.clientService.Client.on("interactionCreate", async (interaction) => {
       if (!interaction.isCommand()) return;
 
-      // Find the command
-      const command: any = this.commandService
-        .getCommands()
-        .find((cmd) => cmd.name === interaction.commandName);
-
-      if (!command) return;
-
-      try {
-        // Execute the command
-        command.execute(interaction);
-      } catch (error) {
-        console.error(error);
-        await interaction.reply({
-          content: "There was an error while executing this command.",
-          ephemeral: true,
-        });
-      }
+      this.commandService.handleCommand(interaction);
     });
 
     this.clientService.Client.on("voiceStateUpdate", (oldMember, newState) => {
       try {
       let newUserChannel = newState.channelId;
-   
+
       if(newUserChannel === "1186434000890380369" || "1189457054700687400" || "1190569963837202543") {
+
         try {
           newState.member!.roles.add("1190743996117565481");
-        } catch {}
+        } catch {
+
+        }
       }
 
       console.log(newState.member!.user + " joined " + newUserChannel);
-    } catch {}
+    } catch {
+
+    }
    })
   }
 }

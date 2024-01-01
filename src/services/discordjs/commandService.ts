@@ -1,4 +1,4 @@
-import { REST, Routes } from "discord.js";
+import { CommandInteraction, Interaction, REST, Routes } from "discord.js";
 import ConfigService from "../system/configService";
 import defaultCommands from "../../commands/commands";
 import {
@@ -58,6 +58,24 @@ class CommandService {
 
   public getCommands() {
     return defaultCommands;
+  }
+
+  public async handleCommand(interaction: CommandInteraction) {
+    const command: any = this.getCommands()
+    .find((cmd) => cmd.name === interaction.commandName);
+
+  if (!command) return;
+
+  try {
+    // Execute the command
+    command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: "There was an error while executing this command.",
+      ephemeral: true,
+    });
+  }
   }
 }
 
