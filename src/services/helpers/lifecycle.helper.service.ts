@@ -98,6 +98,20 @@ class LifecycleHelperService {
         });
       }
     });
+
+    this.clientService.Client.on("voiceStateUpdate", (oldMember, newState) => {
+      try {
+      let newUserChannel = newState.channelId;
+   
+      if(newUserChannel === "1186434000890380369" || "1189457054700687400" || "1190569963837202543") {
+        try {
+          newState.member!.roles.add("1190743996117565481");
+        } catch {}
+      }
+
+      console.log(newState.member!.user + " joined " + newUserChannel);
+    } catch {}
+   })
   }
 }
 
