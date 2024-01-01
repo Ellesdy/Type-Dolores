@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import ConfigService from "../system/configService"; // Update the path as needed
+import ConfigService from "../system/config.service"; // Update the path as needed
 
 class ClientService {
   private client: Client;

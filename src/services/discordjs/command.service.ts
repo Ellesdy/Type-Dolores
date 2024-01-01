@@ -1,5 +1,5 @@
 import { CommandInteraction, Interaction, REST, Routes } from "discord.js";
-import ConfigService from "../system/configService";
+import ConfigService from "../system/config.service";
 import defaultCommands from "../../commands/commands";
 import {
   SlashCommandBuilder,

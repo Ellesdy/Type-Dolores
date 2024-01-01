@@ -1,15 +1,15 @@
 import { Client, CommandInteraction, Message } from "discord.js";
 
 // Assuming these are types you have defined elsewhere
-import ClientService from "../discordjs/clientService";
-import CommandService from "../discordjs/commandService";
+import ClientService from "../discordjs/client.service";
+import CommandService from "../discordjs/command.service";
 import ConversationHelperService from "../helpers/conversation.helper.service";
-import ChatGPTService from "../features/chatGPTService";
-import MessageService from "../system/messageService";
+import ChatGPTService from "../features/chat-gpt.service";
+import MessageService from "../system/message.service";
 import CommandModel from "../../commands/command.model";
 import AuthHelperService from "./auth.helper.service";
 import MessageFilterHelperService from "./message-filter.helper.service";
-import LoggerService from "../system/loggerService";
+import LoggerService from "../system/logger.service";
 
 class LifecycleHelperService {
   private clientService: ClientService;

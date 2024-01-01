@@ -1,5 +1,5 @@
 import { TextBasedChannel } from "discord.js";
-import ConfigService from "./configService";
+import ConfigService from "./config.service";
 
 // Define a type for Messages if you have a specific structure for them
 // For example:

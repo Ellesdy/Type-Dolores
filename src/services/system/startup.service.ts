@@ -1,9 +1,9 @@
 // Import statements for the service classes
 // Adjust these imports according to your actual project structure and the locations of these service classes
-import ClientService from "../discordjs/clientService";
+import ClientService from "../discordjs/client.service";
 import LifecycleHelperService from "../helpers/lifecycle.helper.service";
 import ValidationHelperService from "../helpers/validation.helper.service";
-import CommandService from "../discordjs/commandService";
+import CommandService from "../discordjs/command.service";
 
 class StartupService {
   private clientService: ClientService;

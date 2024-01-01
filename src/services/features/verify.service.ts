@@ -1,5 +1,5 @@
 import { CommandInteraction, GuildMember } from "discord.js";
-import ConfigService from "../system/configService";
+import ConfigService from "../system/config.service";
 
 class VerifyService {
   private configService: ConfigService;

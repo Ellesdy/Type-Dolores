@@ -4,10 +4,10 @@ import axios from "axios";
 
 // Assuming ConversationService is a type you have defined elsewhere
 import ConversationService from "../helpers/conversation.helper.service";
-import ConfigService from "../system/configService";
-import ClientService from "../discordjs/clientService";
+import ConfigService from "../system/config.service";
+import ClientService from "../discordjs/client.service";
 import MessageFilterHelperService from "../helpers/message-filter.helper.service";
-import MessageService from "../system/messageService";
+import MessageService from "../system/message.service";
 
 type Message = {
   role: "user" | "assistant" | "system";

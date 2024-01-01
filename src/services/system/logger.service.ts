@@ -1,6 +1,6 @@
 import colors from "colors";
-import MessageService from "./messageService";
-import MessageJSON from "./configService";
+import MessageService from "./message.service";
+import MessageJSON from "./config.service";
 
 enum MessageCode {
   SYSTEM = "system",

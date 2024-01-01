@@ -1,5 +1,5 @@
-import LoggerService from "../system/loggerService";
-import ConfigService from "../system/configService";
+import LoggerService from "../system/logger.service";
+import ConfigService from "../system/config.service";
 
 type ConfigType = {
   Name: string;

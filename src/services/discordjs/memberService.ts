@@ -1,8 +1,8 @@
 import { GuildMember } from "discord.js";
 
 // Assuming ConfigService and ClientService are types you have defined elsewhere
-import ConfigService from "../system/configService";
-import ClientService from "../discordjs/clientService";
+import ConfigService from "../system/config.service";
+import ClientService from "./client.service";
 
 class MemberService {
   private configService: ConfigService;

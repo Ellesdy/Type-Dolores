@@ -7,9 +7,9 @@ import {
 } from "discord.js";
 
 import { Client } from "discord.js";
-import LoggerService from "../system/loggerService";
-import MessageService from "../system/messageService";
-import ConfigService from "../system/configService";
+import LoggerService from "../system/logger.service";
+import MessageService from "../system/message.service";
+import ConfigService from "../system/config.service";
 
 class ChannelService {
   private Logger: LoggerService;
