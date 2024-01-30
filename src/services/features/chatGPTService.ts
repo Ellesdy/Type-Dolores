@@ -19,7 +19,11 @@ class ChatGPTService {
   private configService: ConfigService;
   private apiKey: string;
 
-  constructor(conversationService: ConversationService, private clientService: ClientService, private messageService: MessageService) {
+  constructor(
+    conversationService: ConversationService,
+    private clientService: ClientService,
+    private messageService: MessageService
+  ) {
     this.conversationService = conversationService;
     this.configService = new ConfigService();
     this.apiKey = this.configService.System.openAIKey;
@@ -85,40 +89,34 @@ class ChatGPTService {
   }
 
   async handleQuery(message: any) {
-      if (MessageFilterHelperService.isBotOrEveryone(message)) {
-        return;
-      }
+    if (MessageFilterHelperService.isBotOrEveryone(message)) {
+      return;
+    }
 
-      //? Would clientService.Client.user ever be undefined here?
-      if (
-        this.clientService.Client.user &&
-        message.mentions.has(this.clientService.Client.user)
-      ) {
-        await message.channel.sendTyping();
+    //? Would clientService.Client.user ever be undefined here?
+    if (
+      this.clientService.Client.user &&
+      message.mentions.has(this.clientService.Client.user)
+    ) {
+      await message.channel.sendTyping();
 
-        const userId = message.author.id;
-        const content = message.content;
+      const userId = message.author.id;
+      const content = message.content;
 
-        const response = await this.handleMessage(
-          userId,
-          content
-        );
+      const response = await this.handleMessage(userId, content);
 
-        if (Array.isArray(response) && response.length > 0) {
-          // Handle the case where response is an array
-          for (const res of response) {
-            if (res.content && res.content.trim() !== "") {
-              // Use res.content here
-            }
+      if (Array.isArray(response) && response.length > 0) {
+        // Handle the case where response is an array
+        for (const res of response) {
+          if (res.content && res.content.trim() !== "") {
+            // Use res.content here
           }
-        } else if (typeof response === "string") {
-          // Handle the case where response is a string
-          await this.messageService.sendDiscordMessage(
-            message.channel,
-            response
-          );
         }
+      } else if (typeof response === "string") {
+        // Handle the case where response is a string
+        await this.messageService.sendDiscordMessage(message.channel, response);
       }
+    }
   }
 }
 

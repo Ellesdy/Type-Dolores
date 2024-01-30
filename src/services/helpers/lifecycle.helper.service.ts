@@ -10,24 +10,30 @@ import CommandModel from "../../commands/command.model";
 import AuthHelperService from "./auth.helper.service";
 import MessageFilterHelperService from "./message-filter.helper.service";
 import LoggerService from "../system/loggerService";
+import MemberService from "../discordjs/memberService"; // Adjust the import path
 
 class LifecycleHelperService {
   private clientService: ClientService;
   private commandService: CommandService;
   private chatGPTService: ChatGPTService;
   private messageService: MessageService;
+  private memberService: MemberService;
+  private loggerService: LoggerService;
 
   constructor(
     clientService: ClientService,
     commandService: CommandService,
     chatGPTService: ChatGPTService,
     messageService: MessageService,
-    private loggerService: LoggerService
+    memberService: MemberService,
+    loggerService: LoggerService
   ) {
     this.clientService = clientService;
     this.commandService = commandService;
     this.chatGPTService = chatGPTService;
     this.messageService = messageService;
+    this.memberService = memberService;
+    this.loggerService = loggerService;
   }
 
   async setupListeners(): Promise<void> {
@@ -36,7 +42,17 @@ class LifecycleHelperService {
       if (clientUser) {
         this.loggerService.logSystem(`Logged in as ${clientUser.tag}!`);
         await this.commandService.registerCommands();
+        await this.memberService.ensureAllGuildMembers();
       }
+    });
+
+    this.clientService.Client.on("guildMemberAdd", async (member) => {
+      // Ensure the new member is in the database
+      await this.memberService.ensureMember(
+        member.id,
+        member.user.username,
+        member.guild.name
+      );
     });
 
     this.clientService.Client.on("messageCreate", async (message: Message) => {
@@ -52,22 +68,21 @@ class LifecycleHelperService {
 
     this.clientService.Client.on("voiceStateUpdate", (oldMember, newState) => {
       try {
-      let newUserChannel = newState.channelId;
+        let newUserChannel = newState.channelId;
 
-      if(newUserChannel === "1186434000890380369" || "1189457054700687400" || "1190569963837202543") {
-
-        try {
-          newState.member!.roles.add("1190743996117565481");
-        } catch {
-
+        if (
+          newUserChannel === "1186434000890380369" ||
+          "1189457054700687400" ||
+          "1190569963837202543"
+        ) {
+          try {
+            newState.member!.roles.add("1190743996117565481");
+          } catch {}
         }
-      }
 
-      console.log(newState.member!.user + " joined " + newUserChannel);
-    } catch {
-
-    }
-   })
+        console.log(newState.member!.user + " joined " + newUserChannel);
+      } catch {}
+    });
   }
 }
 

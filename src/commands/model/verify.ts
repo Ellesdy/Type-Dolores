@@ -17,7 +17,10 @@ const execute = async (interaction: CommandInteraction) => {
     return;
   }
 
-  if (!AuthHelperService.hasManageRolesPermission(interaction.member)) {
+  if (
+    !AuthHelperService.hasManageRolesPermission(interaction.member) ||
+    !interaction.member.roles.cache.has(configService.Role.Verify[0 || 1])
+  ) {
     await interaction.reply({
       content: "You do not have permission to use this command.",
       ephemeral: true,

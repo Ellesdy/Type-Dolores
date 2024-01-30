@@ -19,7 +19,7 @@ class VerifyService {
 
     // Check if the sender has the required roles
     const hasVerifyRole = interaction.member.roles.cache.has(
-      this.configService.Role.Verify
+      this.configService.Role.Verify[0 || 1]
     );
 
     if (!hasVerifyRole) {

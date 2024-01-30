@@ -39,12 +39,17 @@ class ServiceFactory {
     );
     const commandService = new CommandService();
     const conversationService = new ConversationHelperService();
-    const chatGPTService = new ChatGPTService(conversationService);
+    const chatGPTService = new ChatGPTService(
+      conversationService,
+      clientService,
+      messageService
+    );
     const lifecycleHelperService = new LifecycleHelperService(
       clientService,
       commandService,
       chatGPTService,
       messageService,
+      memberService,
       loggerService
     );
     const startupService = new StartupService(

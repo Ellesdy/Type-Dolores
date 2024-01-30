@@ -40,13 +40,15 @@ const refreshChannelOwners = () => {
   channelOwners = JSON.parse(SaveService.loadChannelOwners());
 };
 
-const createVoiceChannel = async (interaction: CommandInteraction): Promise<VoiceChannel> => {
+const createVoiceChannel = async (
+  interaction: CommandInteraction
+): Promise<VoiceChannel> => {
   return (await interaction.guild!.channels.create({
     name: channelName,
     type: ChannelType.GuildVoice, // Ensure this is a voice channel
     // Additional options like permissions, bitrate, user limit, etc.
   })) as VoiceChannel;
-}
+};
 
 const getVoiceChannel = async (interaction: CommandInteraction) => {
   return (await interaction.guild!.channels.fetch(
@@ -54,28 +56,38 @@ const getVoiceChannel = async (interaction: CommandInteraction) => {
   )) as VoiceChannel;
 };
 
-const isCurrentChannelOwner = async (interaction: CommandInteraction, channel: VoiceBasedChannel): Promise<Boolean> => {
-  return channelOwners[interaction.user.id] == channel.id
-}
+const isCurrentChannelOwner = async (
+  interaction: CommandInteraction,
+  channel: VoiceBasedChannel
+): Promise<Boolean> => {
+  return channelOwners[interaction.user.id] == channel.id;
+};
 
-const isVoiceChannel = async (interaction: CommandInteraction): Promise<Boolean> => {
-  return interaction.channel!.type == ChannelType.GuildVoice
-}
+const isVoiceChannel = async (
+  interaction: CommandInteraction
+): Promise<Boolean> => {
+  return interaction.channel!.type == ChannelType.GuildVoice;
+};
 
-const registerChannelOwner = async (interaction: CommandInteraction, channel: VoiceBasedChannel) => {
+const registerChannelOwner = async (
+  interaction: CommandInteraction,
+  channel: VoiceBasedChannel
+) => {
   channelOwners[interaction.user.id] = channel.id;
-    SaveService.saveChannelOwners(JSON.stringify(channelOwners));
-}
+  SaveService.saveChannelOwners(JSON.stringify(channelOwners));
+};
 
 const deregisterChannelOwner = async (interaction: CommandInteraction) => {
   await interaction.channel!.delete();
   delete channelOwners[interaction.user.id];
   SaveService.saveChannelOwners(JSON.stringify(channelOwners));
-}
+};
 
-const hasChannel = async (interaction: CommandInteraction): Promise<Boolean> => {
-   return channelOwners[interaction.user.id] != undefined
-}
+const hasChannel = async (
+  interaction: CommandInteraction
+): Promise<Boolean> => {
+  return channelOwners[interaction.user.id] != undefined;
+};
 
 async function createChannel(interaction: CommandInteraction): Promise<void> {
   refreshChannelOwners();
@@ -115,8 +127,10 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
 
   const channel = await getVoiceChannel(interaction);
 
-  if (!await isVoiceChannel(interaction)) {
-    await interaction.reply("This command can only be used in a voice channel.");
+  if (!(await isVoiceChannel(interaction))) {
+    await interaction.reply(
+      "This command can only be used in a voice channel."
+    );
     return;
   }
 
@@ -135,8 +149,10 @@ async function deleteChannel(interaction: CommandInteraction): Promise<void> {
 async function setUserLimit(interaction: CommandInteraction): Promise<void> {
   refreshChannelOwners();
 
-  if(await isVoiceChannel(interaction)) {
-    await interaction.reply("This command can only be used in a voice channel.");
+  if (await isVoiceChannel(interaction)) {
+    await interaction.reply(
+      "This command can only be used in a voice channel."
+    );
     return;
   }
   //Get Voice Channel
@@ -151,7 +167,9 @@ async function setUserLimit(interaction: CommandInteraction): Promise<void> {
 
   //Validate user owns channel
   if (await isCurrentChannelOwner(interaction, channel)) {
-    await interaction.reply("You can only set the user limit for channels you own.");
+    await interaction.reply(
+      "You can only set the user limit for channels you own."
+    );
     return;
   }
 

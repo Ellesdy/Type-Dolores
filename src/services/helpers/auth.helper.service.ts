@@ -5,4 +5,9 @@ export default class AuthHelperService {
     console.log(user);
     return user.permissions.has(PermissionsBitField.Flags.ManageRoles);
   }
+
+  static hasTimeoutPermission(user: GuildMember) {
+    console.log(user);
+    return user.permissions.has(PermissionsBitField.Flags.ModerateMembers);
+  }
 }
