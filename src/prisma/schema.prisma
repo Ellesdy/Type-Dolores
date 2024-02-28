@@ -8,13 +8,49 @@ datasource db {
 }
 
 model Member {
-  id          Int       @id @default(autoincrement())
-  discordId   String    @unique
+  id          Int                 @id @default(autoincrement())
+  discordId   String              @unique
   username    String
   guildName   String
-  active      Boolean   @default(true)
-  joinDate    DateTime  @default(now())
-  rejoinDate  DateTime? @default(now())
+  active      Boolean             @default(true)
+  joinDate    DateTime            @default(now())
+  rejoinDate  DateTime?           @default(now())
   leaveDate   DateTime?
-  karmaPoints Int       @default(0)
+  karmaPoints Int                 @default(0)
+  noContact   NoContactRelation[] @relation("Blocker")
+  blockedBy   NoContactRelation[] @relation("Blocked")
+}
+
+model CourtRoom {
+  id         Int       @id @default(autoincrement())
+  name       String
+  categoryId String    @unique
+  channels   Channel[]
+  roles      Role[]
+}
+
+model Channel {
+  id          Int       @id @default(autoincrement())
+  name        String
+  channelId   String    @unique
+  courtRoom   CourtRoom @relation(fields: [courtRoomId], references: [id])
+  courtRoomId Int
+}
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String
+  roleId      String    @unique
+  courtRoom   CourtRoom @relation(fields: [courtRoomId], references: [id])
+  courtRoomId Int
+}
+
+model NoContactRelation {
+  id        Int    @id @default(autoincrement())
+  blocker   Member @relation(name: "Blocker", fields: [blockerId], references: [discordId])
+  blockerId String
+  blocked   Member @relation(name: "Blocked", fields: [blockedId], references: [discordId])
+  blockedId String
+
+  @@unique([blockerId, blockedId], name: "noContactCombo")
 }

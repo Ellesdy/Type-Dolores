@@ -13,6 +13,7 @@ import VCManagerService from "./features/VCManagerService";
 import VerifyService from "./features/verifyService";
 import ConversationHelperService from "./helpers/conversation.helper.service";
 import MemberService from "./discordjs/memberService";
+import MusicService from "./features/musicService";
 import { Client } from "discord.js";
 
 class ServiceFactory {
@@ -25,6 +26,7 @@ class ServiceFactory {
 
     const guildService = new GuildService(clientService, configService);
     const memberService = new MemberService(configService, clientService);
+    const musicService = new MusicService();
     const vcManagerService = new VCManagerService();
     const validationHelperService = new ValidationHelperService(
       loggerService,
@@ -74,6 +76,7 @@ class ServiceFactory {
       validationHelperService,
       verifyService,
       memberService,
+      musicService,
     };
   }
 }

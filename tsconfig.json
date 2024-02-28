@@ -3,11 +3,13 @@
       "target": "es2020",
       "module": "commonjs",
       "moduleResolution": "node",
+      "skipLibCheck": true,
       "resolveJsonModule": true,
       "esModuleInterop": true,
       "strict": true,
       "outDir": "./dist",
+      "typeRoots": ["./node_modules/@types", "./types"]
     },
-    "include": ["src/**/*", "concatenateFiles.js"],
+    "include": ["src/**/*", "types/**/*", "concatenateFiles.js"],
     "exclude": ["node_modules", "**/*.spec.ts"]
   }

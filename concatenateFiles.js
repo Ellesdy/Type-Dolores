@@ -7,7 +7,11 @@ function listFilesRecursive(dir, fileList = []) {
         if (fs.statSync(fullPath).isDirectory()) {
             fileList = listFilesRecursive(fullPath, fileList);
         } else {
-            fileList.push(fullPath);
+            // Check if the file extension is .js, .json, or .ts
+            const ext = path.extname(file);
+            if (ext === '.js' || ext === '.json' || ext === '.ts') {
+                fileList.push(fullPath);
+            }
         }
     });
     return fileList;
